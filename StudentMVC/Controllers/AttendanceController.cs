@@ -1,34 +1,37 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using StudentMVC.Data;
 using StudentMVC.Models;
-using StudentMVC.Services;
+
+// using StudentMVC.Services;
 
 namespace StudentMVC.Controllers;
 
 public class AttendanceController : Controller
 {
-    private readonly IStudentService _studentService;
-    private readonly IAttendanceService _attendanceService;
+    private readonly AppDbContext _context;
 
-    public AttendanceController(
-        IStudentService studentService,
-        IAttendanceService attendanceService
-    )
+    public AttendanceController(AppDbContext context)
     {
-        _studentService = studentService;
-        _attendanceService = attendanceService;
+        _context = context;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var attendances = _attendanceService.GetAll();
+        var attendances = await _context
+            .Attendances.Include(a => a.Student)
+            .OrderByDescending(a => a.Date)
+            .ThenByDescending(a => a.Time)
+            .ToListAsync();
+
         return View(attendances);
     }
 
     // GET: Attendance/Create/{studentId}
     [HttpGet]
-    public IActionResult Create(int studentId)
+    public async Task<IActionResult> Create(int studentId)
     {
-        var student = _studentService.GetStudentById(studentId);
+        var student = await _context.Students.FindAsync(studentId);
         if (student == null)
             return NotFound();
 
@@ -45,9 +48,9 @@ public class AttendanceController : Controller
     // POST: Attendance/Create/{studentId}
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Create(Attendance attendance)
+    public async Task<IActionResult> Create(Attendance attendance)
     {
-        var student = _studentService.GetStudentById(attendance.StudentId);
+        var student = _context.Students.Find(attendance.StudentId);
         if (student == null)
             return NotFound();
 
@@ -55,7 +58,8 @@ public class AttendanceController : Controller
 
         if (ModelState.IsValid)
         {
-            _attendanceService.CreateAttendance(attendance);
+            _context.Add(attendance);
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
         return View(attendance);

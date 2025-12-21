@@ -194,3 +194,4 @@ X:\Project\FullStackCSharpDay3\StudentMVC\obj\Debug\net8.0\refint\StudentMVC.dll
 X:\Project\FullStackCSharpDay3\StudentMVC\obj\Debug\net8.0\StudentMVC.pdb
 X:\Project\FullStackCSharpDay3\StudentMVC\obj\Debug\net8.0\StudentMVC.genruntimeconfig.cache
 X:\Project\FullStackCSharpDay3\StudentMVC\obj\Debug\net8.0\ref\StudentMVC.dll
+X:\Project\FullStackCSharpDay3\StudentMVC\obj\Debug\net8.0\StudentMVC.sourcelink.json

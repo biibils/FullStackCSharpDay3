@@ -11,7 +11,7 @@ using StudentMVC.Data;
 namespace StudentMVC.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251221143135_InitialCreate")]
+    [Migration("20251221163011_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
