@@ -33,7 +33,10 @@ public class AttendanceController : Controller
     {
         var student = await _context.Students.FindAsync(studentId);
         if (student == null)
-            return NotFound();
+        {
+            TempData["ErrorMessage"] = "ID Siswa tidak ditemukan";
+            return RedirectToAction("Index", "Student");
+        }
 
         var attendance = new Attendance
         {
@@ -52,16 +55,21 @@ public class AttendanceController : Controller
     {
         var student = _context.Students.Find(attendance.StudentId);
         if (student == null)
-            return NotFound();
+        {
+            TempData["ErrorMessage"] = "ID Siswa tidak ditemukan";
+            return RedirectToAction("Index", "Student");
+        }
 
         attendance.Student = student;
 
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            _context.Add(attendance);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            TempData["ErrorMessage"] = "Data Presensi tidak valid";
+            return View(attendance);
         }
-        return View(attendance);
+        _context.Add(attendance);
+        await _context.SaveChangesAsync();
+        TempData["SuccessMessage"] = "Presensi berhasil disimpan";
+        return RedirectToAction(nameof(Index));
     }
 }

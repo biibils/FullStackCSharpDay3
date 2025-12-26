@@ -39,8 +39,10 @@ public class StudentController : Controller
         {
             _context.Add(student);
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Data Siswa berhasil dibuat";
             return RedirectToAction(nameof(Index));
         }
+        TempData["ErrorMessage"] = "Data Siswa tidak valid";
         return View(student);
     }
 
@@ -49,12 +51,15 @@ public class StudentController : Controller
     {
         if (id == null)
         {
-            return NotFound();
+            TempData["ErrorMessage"] = "ID Siswa tidak ditemukan";
+            return RedirectToAction("Index", "Student");
         }
         var student = await _context.Students.FindAsync(id);
         if (student == null)
-            return NotFound();
-
+        {
+            TempData["ErrorMessage"] = "Data Siswa tidak ditemukan";
+            return RedirectToAction("Index", "Student");
+        }
         return View(student);
     }
 
@@ -65,7 +70,8 @@ public class StudentController : Controller
     {
         if (id != student.Id)
         {
-            return NotFound();
+            TempData["ErrorMessage"] = "ID Siswa tidak ditemukan";
+            return RedirectToAction("Index", "Student");
         }
 
         if (ModelState.IsValid)
@@ -79,13 +85,15 @@ public class StudentController : Controller
             {
                 if (!StudentExists(student.Id))
                 {
-                    return NotFound();
+                    TempData["ErrorMessage"] = "ID Siswa tidak ditemukan";
+                    return RedirectToAction("Index", "Student");
                 }
                 else
                 {
                     throw;
                 }
             }
+            TempData["SuccessMessage"] = "Data Siswa berhasil diubah";
             return RedirectToAction(nameof(Index));
         }
         return View(student);
@@ -95,12 +103,16 @@ public class StudentController : Controller
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
-            return NotFound();
+        {
+            TempData["ErrorMessage"] = "ID Siswa tidak ditemukan";
+            return RedirectToAction("Index", "Student");
+        }
 
         var student = await _context.Students.FirstOrDefaultAsync(m => m.Id == id);
         if (student == null)
         {
-            return NotFound();
+            TempData["ErrorMessage"] = "Data Siswa tidak ditemukan";
+            return RedirectToAction("Index", "Student");
         }
         return View(student);
     }
@@ -116,6 +128,7 @@ public class StudentController : Controller
             _context.Students.Remove(student);
         }
         await _context.SaveChangesAsync();
+        TempData["SuccessMessage"] = "Data Siswa berhasil dihapus";
         return RedirectToAction(nameof(Index));
     }
 
@@ -123,12 +136,16 @@ public class StudentController : Controller
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
-            return NotFound();
+        {
+            TempData["ErrorMessage"] = "ID Siswa tidak ditemukan";
+            return RedirectToAction("Index", "Student");
+        }
 
         var student = await _context.Students.FirstOrDefaultAsync(m => m.Id == id);
         if (student == null)
         {
-            return NotFound();
+            TempData["ErrorMessage"] = "Data Siswa tidak ditemukan";
+            return RedirectToAction("Index", "Student");
         }
         return View(student);
     }

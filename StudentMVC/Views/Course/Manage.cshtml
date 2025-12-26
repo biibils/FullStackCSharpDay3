@@ -22,3 +22,7 @@
     <button type="submit">Save</button>
     <a asp-action="Details" asp-route-id="@Model.Course?.Id">Cancel</a>
 </form>
+
+@section Scripts {
+	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -35,8 +35,10 @@ public class CourseController : Controller
         {
             _context.Add(course);
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Kursus berhasil ditambahkan";
             return RedirectToAction(nameof(Index));
         }
+        TempData["ErrorMessage"] = "Data Kursus tidak valid";
         return View(course);
     }
 
@@ -45,25 +47,28 @@ public class CourseController : Controller
     {
         if (id == null)
         {
-            return NotFound();
+            TempData["ErrorMessage"] = "Data Siswa tidak ditemukan";
+            return RedirectToAction("Index", "Course");
         }
 
         var course = await _context.Courses.FindAsync(id);
         if (course == null)
         {
-            return NotFound();
+            TempData["ErrorMessage"] = "Data Kursus tidak ditemukan";
+            return RedirectToAction("Index", "Course");
         }
         return View(course);
     }
 
-    // POST: Course/Edot/{id}
+    // POST: Course/Edit/{id}
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Course course)
     {
         if (id != course.Id)
         {
-            return NotFound();
+            TempData["ErrorMessage"] = "ID Kursus tidak ditemukan";
+            return RedirectToAction("Index", "Course");
         }
 
         if (ModelState.IsValid)
@@ -77,15 +82,18 @@ public class CourseController : Controller
             {
                 if (!CourseExists(course.Id))
                 {
-                    return NotFound();
+                    TempData["ErrorMessage"] = "ID Kursus tidak ditemukan";
+                    return RedirectToAction("Index", "Course");
                 }
                 else
                 {
                     throw;
                 }
             }
+            TempData["SuccessMessage"] = "Data Kursus berhasil diubah";
             return RedirectToAction(nameof(Index));
         }
+        TempData["ErrorMessage"] = "Data Kursus tidak valid";
         return View(course);
     }
 
@@ -93,14 +101,20 @@ public class CourseController : Controller
     public async Task<IActionResult> Manage(int? id)
     {
         if (id == null)
-            return NotFound();
+        {
+            TempData["ErrorMessage"] = "ID Kursus tidak ditemukan";
+            return RedirectToAction("Index", "Course");
+        }
 
         var course = await _context
             .Courses.Include(c => c.Students)
             .FirstOrDefaultAsync(c => c.Id == id);
 
         if (course == null)
-            return NotFound();
+        {
+            TempData["ErrorMessage"] = "Data Kursus tidak ditemukan";
+            return RedirectToAction("Index", "Course");
+        }
 
         var allStudents = await _context.Students.ToListAsync();
 
@@ -123,7 +137,10 @@ public class CourseController : Controller
             .FirstOrDefaultAsync(c => c.Id == id);
 
         if (course == null)
-            return NotFound();
+        {
+            TempData["ErrorMessage"] = "Kursus tidak ditemukan";
+            return RedirectToAction("Index", "Course");
+        }
 
         course.Students.Clear();
 
@@ -140,6 +157,7 @@ public class CourseController : Controller
         }
 
         await _context.SaveChangesAsync();
+        TempData["SuccessMessage"] = "Data Peserta Kursus berhasil disimpan";
         return RedirectToAction(nameof(Details), new { id });
     }
 
@@ -148,13 +166,15 @@ public class CourseController : Controller
     {
         if (id == null)
         {
-            return NotFound();
+            TempData["ErrorMessage"] = "ID Kursus tidak ditemukan";
+            return RedirectToAction("Index", "Course");
         }
 
         var course = await _context.Courses.FirstOrDefaultAsync(m => m.Id == id);
         if (course == null)
         {
-            return NotFound();
+            TempData["ErrorMessage"] = "Data Kursus tidak ditemukan";
+            return RedirectToAction("Index", "Course");
         }
         return View(course);
     }
@@ -171,6 +191,7 @@ public class CourseController : Controller
         }
 
         await _context.SaveChangesAsync();
+        TempData["SuccessMessage"] = "Data Kursus berhasil dihapus";
         return RedirectToAction(nameof(Index));
     }
 
@@ -179,7 +200,8 @@ public class CourseController : Controller
     {
         if (id == null)
         {
-            return NotFound();
+            TempData["ErrorMessage"] = "ID Kursus tidak ditemukan";
+            return RedirectToAction("Index", "Course");
         }
 
         var course = await _context
@@ -188,7 +210,8 @@ public class CourseController : Controller
 
         if (course == null)
         {
-            return NotFound();
+            TempData["ErrorMessage"] = "Data Kursus tidak ditemukan";
+            return RedirectToAction("Index", "Course");
         }
         return View(course);
     }

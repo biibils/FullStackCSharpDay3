@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("paracommerce")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f51a870008830c09fd13b573b1731682c222a6d1")]
 [assembly: System.Reflection.AssemblyProductAttribute("paracommerce")]
 [assembly: System.Reflection.AssemblyTitleAttribute("paracommerce")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

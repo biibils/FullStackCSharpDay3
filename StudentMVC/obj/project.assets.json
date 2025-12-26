@@ -4015,19 +4015,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\billy\\.nuget\\packages\\": {}
+    "C:\\Users\\ASUS\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "X:\\Project\\FullStackCSharpDay3\\StudentMVC\\StudentMVC.csproj",
+      "projectUniqueName": "D:\\WEBDEV\\ParadayaSE\\FullStackCSharp\\FullStackDay3\\StudentMVC\\StudentMVC.csproj",
       "projectName": "StudentMVC",
-      "projectPath": "X:\\Project\\FullStackCSharpDay3\\StudentMVC\\StudentMVC.csproj",
-      "packagesPath": "C:\\Users\\billy\\.nuget\\packages\\",
-      "outputPath": "X:\\Project\\FullStackCSharpDay3\\StudentMVC\\obj\\",
+      "projectPath": "D:\\WEBDEV\\ParadayaSE\\FullStackCSharp\\FullStackDay3\\StudentMVC\\StudentMVC.csproj",
+      "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
+      "outputPath": "D:\\WEBDEV\\ParadayaSE\\FullStackCSharp\\FullStackDay3\\StudentMVC\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\billy\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
