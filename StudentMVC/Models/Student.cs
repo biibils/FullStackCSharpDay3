@@ -21,7 +21,7 @@ public class Student
     [Range(18, 60, ErrorMessage = "Usia antara 18 hingga 60 tahun")]
     public int Age { get; set; }
 
-		public virtual ICollection<Course> Courses { get; set; } = new List<Course>();
+    public virtual ICollection<Course> Courses { get; set; } = new List<Course>();
 }
 
 public class OnlyLettersAttribute : ValidationAttribute
