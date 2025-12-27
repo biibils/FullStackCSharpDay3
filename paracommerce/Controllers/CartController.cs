@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using paracommerce.Data;
 using paracommerce.Models;
 using paracommerce.Services;
 
@@ -6,21 +7,21 @@ namespace paracommerce.Controllers;
 
 public class CartController : Controller
 {
-    private readonly IProductService _productService;
+    private readonly AppDbContext _context;
     private readonly ICartService _cartService;
 
-    public CartController(IProductService productService, ICartService cartService)
+    public CartController(AppDbContext context, ICartService cartService)
     {
-        _productService = productService;
+        _context = context;
         _cartService = cartService;
     }
 
     // POST: Cart/Add
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult AddToCart(int productId)
+    public async Task<IActionResult> AddToCart(int productId)
     {
-        var product = _productService.GetProductById(productId);
+        var product = await _context.Products.FindAsync(productId);
         if (product == null)
         {
             return NotFound();

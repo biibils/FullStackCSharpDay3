@@ -1,22 +1,25 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using paracommerce.Models;
-using paracommerce.Services;
+using Microsoft.EntityFrameworkCore;
+using paracommerce.Data;
 
 namespace paracommerce.Controllers;
 
 public class MarketController : Controller
 {
-    private readonly IProductService _productService;
+    private readonly AppDbContext _context;
 
-    public MarketController(IProductService productService)
+    public MarketController(AppDbContext context)
     {
-        _productService = productService;
+        _context = context;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index(string searchName)
     {
-        var products = _productService.GetAllProducts();
+        var products = await _context
+            .Products.Where(s =>
+                string.IsNullOrEmpty(searchName) || (s.Name != null && s.Name.Contains(searchName))
+            )
+            .ToListAsync();
 
         if (!products.Any())
         {

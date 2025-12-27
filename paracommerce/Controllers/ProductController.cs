@@ -1,22 +1,27 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using paracommerce.Data;
 using paracommerce.Models;
-using paracommerce.Services;
 
 namespace paracommerce.Controllers
 {
     public class ProductController : Controller
     {
-        private readonly IProductService _productService;
+        private readonly AppDbContext _context;
 
-        public ProductController(IProductService productService)
+        public ProductController(AppDbContext context)
         {
-            _productService = productService;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(string searchName)
         {
-            var products = _productService.GetAllProducts();
+            var products = await _context
+                .Products.Where(s =>
+                    string.IsNullOrEmpty(searchName)
+                    || (s.Name != null && s.Name.Contains(searchName))
+                )
+                .ToListAsync();
 
             if (!products.Any())
             {
@@ -34,23 +39,31 @@ namespace paracommerce.Controllers
         // POST: Product/Add
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Add(Product product)
+        public async Task<IActionResult> Add(Product product)
         {
             if (ModelState.IsValid)
             {
-                _productService.AddProduct(product);
+                _context.Add(product);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Produk berhasil ditambahkan";
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
         }
 
         // GET: Product/Edit/{id}
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int? id)
         {
-            var product = _productService.GetProductById(id);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "ID Produk tidak ditemukan";
+                return RedirectToAction("Index", "Product");
+            }
+            var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "Produk tidak ditemukan";
+                return RedirectToAction("Index", "Product");
             }
             return View(product);
         }
@@ -58,28 +71,58 @@ namespace paracommerce.Controllers
         // POST: Product/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Product product)
+        public async Task<IActionResult> Edit(int id, Product input)
         {
-            if (id != product.Id)
+            if (id != input.Id)
             {
-                return BadRequest();
-            }
-
-            if (ModelState.IsValid)
-            {
-                _productService.UpdateProduct(product);
+                TempData["ErrorMessage"] = "ID Produk tidak valid";
                 return RedirectToAction(nameof(Index));
             }
-            return View(product);
+
+            if (!ModelState.IsValid)
+                return View(input);
+
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+            {
+                TempData["ErrorMessage"] = "Produk tidak ditemukan";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Update field secara eksplisit
+            product.Name = input.Name;
+            product.Description = input.Description;
+            product.Price = input.Price;
+            product.Stock = input.Stock;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Data produk berhasil diperbarui";
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                TempData["ErrorMessage"] = "Data telah diubah oleh proses lain";
+                return RedirectToAction(nameof(Edit), new { id });
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Product/Delete/{id}
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            var product = _productService.GetProductById(id);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "ID Produk tidak ditemukan";
+                return RedirectToAction("Index", "Product");
+            }
+
+            var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "Produk tidak ditemukan";
+                return RedirectToAction("Index", "Product");
             }
             return View(product);
         }
@@ -87,21 +130,39 @@ namespace paracommerce.Controllers
         // POST: Product/Delete/{id}
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            _productService.DeleteProduct(id);
+            var product = await _context.Products.FindAsync(id);
+            if (product != null)
+            {
+                _context.Products.Remove(product);
+            }
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Data Produk berhasil dihapus";
             return RedirectToAction(nameof(Index));
         }
 
         // GET: Product/Details/{id}
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int? id)
         {
-            var product = _productService.GetProductById(id);
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "ID Produk tidak ditemukan";
+                return RedirectToAction("Index", "Product");
+            }
+
+            var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "Produk tidak ditemukan";
+                return RedirectToAction("Index", "Product");
             }
             return View(product);
+        }
+
+        private bool ProductExists(int id)
+        {
+            return _context.Products.Any(e => e.Id == id);
         }
     }
 }

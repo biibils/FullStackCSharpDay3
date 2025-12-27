@@ -19,7 +19,29 @@
 }
 else
 {
-    @foreach (var product in Model)
+    <form method="get" asp-action="Index" class="mb-4">
+    	<div class="row g-2 align-items-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="input-group">
+                <span class="input-group-text">
+                    🔍
+                </span>
+                <input type="text"
+                       name="searchName"
+                       class="form-control"
+                       placeholder="Cari berdasarkan nama produk..."
+                       value="@Context.Request.Query["searchName"]" />
+            </div>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">
+                Cari
+            </button>
+        </div>
+    	</div>
+		</form>
+		
+		@foreach (var product in Model)
     {
         var cartItem = cart.Items.FirstOrDefault(i => i.Product.Id == product.Id);
         <div class="product-item">
